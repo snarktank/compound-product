@@ -16,8 +16,18 @@ if [ -z "${BASH_SOURCE[0]}" ] || [ "${BASH_SOURCE[0]}" = "bash" ] || [ ! -f "${B
   git clone --quiet "$REPO_URL" "$TEMP_DIR/compound-product"
   SCRIPT_DIR="$TEMP_DIR/compound-product"
 else
-  # Running locally
+  # Running locally - but verify this is actually a compound-product repo
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  
+  # Check if this looks like a compound-product repo (has our key files)
+  if [ ! -f "$SCRIPT_DIR/scripts/auto-compound.sh" ] || [ ! -f "$SCRIPT_DIR/config.example.json" ]; then
+    # Not a compound-product repo - clone fresh
+    TEMP_DIR="$(mktemp -d)"
+    trap "rm -rf '$TEMP_DIR'" EXIT
+    echo "Cloning compound-product..."
+    git clone --quiet "$REPO_URL" "$TEMP_DIR/compound-product"
+    SCRIPT_DIR="$TEMP_DIR/compound-product"
+  fi
 fi
 
 TARGET_DIR="${1:-$(pwd)}"

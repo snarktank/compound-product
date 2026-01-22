@@ -65,6 +65,13 @@ command -v jq >/dev/null 2>&1 || error "jq not found. Install with: brew install
 
 cd "$PROJECT_ROOT"
 
+# Source environment variables if available
+if [ -f ".env.local" ]; then
+  set -a
+  source .env.local
+  set +a
+fi
+
 # Step 1: Find most recent report
 log "Step 1: Finding most recent report..."
 git pull origin main 2>/dev/null || true
