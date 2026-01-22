@@ -30,8 +30,10 @@ if [ -n "$ANTHROPIC_API_KEY" ]; then
   PROVIDER="anthropic"
 elif [ -n "$OPENROUTER_API_KEY" ]; then
   PROVIDER="openrouter"
-elif [ -n "$AI_GATEWAY_URL" ] && [ -n "$AI_GATEWAY_API_KEY" ]; then
+elif [ -n "$AI_GATEWAY_API_KEY" ]; then
   PROVIDER="gateway"
+  # Default to Vercel AI Gateway URL if not specified
+  AI_GATEWAY_URL="${AI_GATEWAY_URL:-https://ai-gateway.vercel.sh/v1}"
 fi
 
 if [ -z "$PROVIDER" ]; then
@@ -40,16 +42,14 @@ if [ -z "$PROVIDER" ]; then
   echo "║  No LLM provider configured. Set one of these environment vars: ║" >&2
   echo "╠══════════════════════════════════════════════════════════════════╣" >&2
   echo "║                                                                  ║" >&2
-  echo "║  Option 1: Anthropic API (direct)                                ║" >&2
+  echo "║  Option 1: Vercel AI Gateway (recommended)                       ║" >&2
+  echo "║    export AI_GATEWAY_API_KEY=your-key                            ║" >&2
+  echo "║                                                                  ║" >&2
+  echo "║  Option 2: Anthropic API (direct)                                ║" >&2
   echo "║    export ANTHROPIC_API_KEY=sk-ant-...                           ║" >&2
   echo "║                                                                  ║" >&2
-  echo "║  Option 2: OpenRouter                                            ║" >&2
+  echo "║  Option 3: OpenRouter                                            ║" >&2
   echo "║    export OPENROUTER_API_KEY=sk-or-...                           ║" >&2
-  echo "║                                                                  ║" >&2
-  echo "║  Option 3: AI Gateway (OpenAI-compatible endpoint)               ║" >&2
-  echo "║    export AI_GATEWAY_URL=https://your-gateway.com/v1             ║" >&2
-  echo "║    export AI_GATEWAY_API_KEY=your-key                            ║" >&2
-  echo "║    export AI_GATEWAY_MODEL=claude-sonnet-4-20250514  (optional)  ║" >&2
   echo "║                                                                  ║" >&2
   echo "╚══════════════════════════════════════════════════════════════════╝" >&2
   echo "" >&2
@@ -113,7 +113,7 @@ case "$PROVIDER" in
     ;;
     
   gateway)
-    MODEL="${AI_GATEWAY_MODEL:-claude-sonnet-4-20250514}"
+    MODEL="${AI_GATEWAY_MODEL:-anthropic/claude-sonnet-4-20250514}"
     RESPONSE=$(curl -s "${AI_GATEWAY_URL}/chat/completions" \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $AI_GATEWAY_API_KEY" \
