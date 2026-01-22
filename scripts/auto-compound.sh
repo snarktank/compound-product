@@ -61,7 +61,10 @@ TASKS_DIR="$PROJECT_ROOT/tasks"
 command -v "$TOOL" >/dev/null 2>&1 || error "$TOOL CLI not found"
 command -v gh >/dev/null 2>&1 || error "gh CLI not found. Install with: brew install gh"
 command -v jq >/dev/null 2>&1 || error "jq not found. Install with: brew install jq"
-[ -n "$ANTHROPIC_API_KEY" ] || error "ANTHROPIC_API_KEY not set"
+# Only require ANTHROPIC_API_KEY if using default analyze script
+if [ -z "$ANALYZE_COMMAND" ]; then
+  [ -n "$ANTHROPIC_API_KEY" ] || error "ANTHROPIC_API_KEY not set"
+fi
 
 cd "$PROJECT_ROOT"
 
@@ -78,8 +81,8 @@ log "Using report: $REPORT_NAME"
 log "Step 2: Analyzing report to pick #1 actionable priority..."
 
 if [ -n "$ANALYZE_COMMAND" ]; then
-  # Use custom analyze command
-  ANALYSIS_JSON=$($ANALYZE_COMMAND "$LATEST_REPORT" 2>/dev/null)
+  # Use custom analyze command (eval to handle complex commands with pipes/args)
+  ANALYSIS_JSON=$(eval "$ANALYZE_COMMAND \"$LATEST_REPORT\"" 2>/dev/null)
 else
   # Use default analyze script
   ANALYSIS_JSON=$("$SCRIPT_DIR/analyze-report.sh" "$LATEST_REPORT" 2>/dev/null)
