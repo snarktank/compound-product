@@ -138,6 +138,8 @@ IMPORTANT CONSTRAINTS:
 - Keep scope small - this should be completable in 2-4 hours
 - Break into 3-5 small tasks maximum
 - Each task must be verifiable with quality checks and/or browser testing
+- DO NOT ask clarifying questions - you have enough context to proceed
+- Generate the PRD immediately without waiting for user input
 
 Save the PRD to: tasks/$PRD_FILENAME"
 
