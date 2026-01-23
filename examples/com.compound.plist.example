@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.compound.YOUR_PROJECT</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <!-- Update the path below to match your project -->
+        <string>cd /path/to/your/project && export $(grep -v '^#' .env.local | grep -E '^[A-Z]' | xargs) && ./scripts/compound/auto-compound.sh >> logs/compound.log 2>&1</string>
+    </array>
+    
+    <!-- Run daily at 12:30 AM local time -->
+    <!-- Adjust Hour/Minute to your preference -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>0</integer>
+        <key>Minute</key>
+        <integer>30</integer>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>/path/to/your/project/logs/compound.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/path/to/your/project/logs/compound-error.log</string>
+    
+    <key>WorkingDirectory</key>
+    <string>/path/to/your/project</string>
+    
+    <!-- IMPORTANT: Include paths where your tools are installed -->
+    <!-- Common locations: /opt/homebrew/bin (Homebrew on Apple Silicon) -->
+    <!--                   ~/.npm-global/bin (npm global installs) -->
+    <!--                   ~/.local/bin (pip user installs) -->
+    <!-- Run 'which amp' or 'which claude' to find your CLI location -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/.npm-global/bin</string>
+        <key>HOME</key>
+        <string>/Users/YOUR_USERNAME</string>
+    </dict>
+</dict>
+</plist>

@@ -285,6 +285,50 @@ The scripts use `--dangerously-allow-all` (Amp) and `--dangerously-skip-permissi
 3. **Small tasks compound** - Many small, correct changes beat large, risky ones
 4. **Human review remains** - The loop creates PRs, not direct merges
 
+## Scheduling (macOS launchd)
+
+To run Compound Product automatically (e.g., every night), use macOS launchd:
+
+```bash
+# Copy the example plist
+cp examples/com.compound.plist.example ~/Library/LaunchAgents/com.compound.myproject.plist
+
+# Edit it with your project path and username
+nano ~/Library/LaunchAgents/com.compound.myproject.plist
+
+# Load it
+launchctl load ~/Library/LaunchAgents/com.compound.myproject.plist
+
+# Check status (last column is exit code, 0 = success)
+launchctl list | grep compound
+```
+
+**Important: PATH configuration**
+
+launchd runs with a minimal PATH. You must include the directories where your tools are installed:
+
+```bash
+# Find where your CLI is installed
+which amp    # e.g., /Users/you/.npm-global/bin/amp
+which claude # e.g., /opt/homebrew/bin/claude
+```
+
+Update the `PATH` in your plist to include these directories. The example plist includes common locations.
+
+**Troubleshooting launchd:**
+
+```bash
+# Check logs
+tail -f /path/to/your/project/logs/compound.log
+
+# Unload and reload
+launchctl unload ~/Library/LaunchAgents/com.compound.myproject.plist
+launchctl load ~/Library/LaunchAgents/com.compound.myproject.plist
+
+# Test manually (should produce same result as launchd)
+/bin/bash -c 'cd /path/to/project && ./scripts/compound/auto-compound.sh --dry-run'
+```
+
 ## Troubleshooting
 
 ### Loop exits early
